@@ -34,7 +34,7 @@ WITH total_amount_per_month AS (
   SELECT
       trip_year,
       trip_month,
-      ROUND(SUM(total_amount),2) AS total_amount
+      SUM(total_amount) AS total_amount
   FROM ifood.gold.mv_taxi_tripdata
   WHERE type_id = 1
     AND trip_year = 2023 
@@ -45,13 +45,13 @@ WITH total_amount_per_month AS (
       trip_month
 )
 SELECT
-    AVG(total_amount) AS avg_amount
+    ROUND(AVG(total_amount),2) AS avg_amount
 FROM total_amount_per_month;
 
 -- COMMAND ----------
 
 -- MAGIC %md
--- MAGIC Qual a média de passageiros (passenger_count) por cada hora do dia que pegaram táxi no mês de maio considerando todos os táxis da frota?
+-- MAGIC **Qual a média de passageiros (passenger_count) por cada hora do dia que pegaram táxi no mês de maio considerando todos os táxis da frota?**
 
 -- COMMAND ----------
 
