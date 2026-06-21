@@ -20,13 +20,7 @@ Os arquivos de origem foram carregados em um **volume interno do Unity Catalog**
 
 ### Modelo de Dados
 
-A pipeline segue a **Medallion Architecture**, organizando os dados em três camadas com responsabilidades distintas:
-
-| Camada | Responsabilidade |
-|--------|-----------------|
-| Bronze | Ingestão dos dados brutos preservando a fonte |
-| Silver | Padronização, limpeza e ajustes de schema |
-| Gold   | Unificação e enriquecimento para consumo analítico |
+A pipeline segue a **Medallion Architecture**, organizando os dados em três camadas com responsabilidades distintas.
 
 ### Ferramentas de Desenvolvimento
 
@@ -104,20 +98,8 @@ Após a criação dos volumes, os arquivos Parquet devem ser carregados manualme
 - `/Volumes/ifood/nyc/yellow_tripdata/`
 - `/Volumes/ifood/nyc/green_tripdata/`
 
----
+## Documentação das Camadas
 
-## Bronze Layer
-
-[Bronze](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/bronze/README.md): Responsável pela ingestão dos arquivos Parquet originais, preservando os dados o mais próximo possível da fonte.
-
----
-
-## Silver Layer
-
-[Silver](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/silver/README.md): Responsável por preparar os dados da camada Bronze para consumo analítico, aplicando padronizações, ajustes de schema e conversões de tipos de dado.
-
----
-
-## Gold Layer
-
-[Gold](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/gold/README.md): Responsável pela unificação e enriquecimento dos dados das duas frotas de táxi, consolidando os registros de Yellow e Green Taxi em uma única tabela analítica.
+- [Bronze Layer](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/bronze/README.md): Responsável pela ingestão dos arquivos Parquet originais, preservando os dados o mais próximo possível da fonte.
+- [Silver Layer](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/silver/README.md): Responsável por preparar os dados da camada Bronze para consumo analítico, aplicando padronizações, ajustes de schema e conversões de tipos de dados.
+- [Gold Layer](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/gold/README.md): Responsável pela unificação e enriquecimento dos dados das duas frotas de táxi, consolidando os registros de Yellow e Green Taxi em uma única tabela analítica.
