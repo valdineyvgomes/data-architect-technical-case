@@ -6,10 +6,6 @@ Pipeline de dados construída no Databricks para ingestão, transformação e di
 
 ## Premissas
 
-### Uso de IA
-
-A IA foi utilizada como apoio na formatação dos READMEs do projeto e correção ortográfica.
-
 ### Orquestração
 
 Foi utilizado o Declarative Pipelines do Databricks como mecanismo de orquestração, evitando dependências externas (ex.: Airflow, dbt) e simplificando o setup do ambiente de desenvolvimento.
@@ -25,6 +21,10 @@ A pipeline segue a **Medallion Architecture**, organizando os dados em três cam
 ### Ferramentas de Desenvolvimento
 
 O **DuckDB** foi utilizado para exploração local dos arquivos Parquet e entendimento inicial dos dados. O desenvolvimento da solução foi realizado no **Databricks Community Edition**.
+
+### Uso de IA
+
+A IA foi utilizada como apoio na formatação dos READMEs do projeto e correção ortográfica.
 
 ### Linguagem
 
