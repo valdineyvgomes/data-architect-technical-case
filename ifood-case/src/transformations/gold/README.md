@@ -1,4 +1,3 @@
-%md
 ### Gold Layer
 
 Responsável pela unificação e enriquecimento dos dados das duas frotas de táxi, consolidando os registros de Yellow e Green Taxi em uma única tabela analítica.
