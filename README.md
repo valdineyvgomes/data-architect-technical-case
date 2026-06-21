@@ -58,8 +58,8 @@ flowchart LR
 ```
 ifood-case/
 ├── analysis/
-│   ├── Analysis -> Respostas das perguntas nos formatos .sql e html. 
-│   └── Exploration -> Exploração dos dados brutos e da camanada bronze nos formatos .py e html. 
+│   ├── Analysis -> Respostas das perguntas nos formatos .sql e ipynb. 
+│   └── Exploration -> Exploração dos dados brutos e da camanada bronze nos formatos .py e ipynb. 
 └── src/
     └── transformations/
         ├── bronze/
