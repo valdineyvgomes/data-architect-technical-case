@@ -108,109 +108,16 @@ Após a criação dos volumes, os arquivos Parquet devem ser carregados manualme
 
 ## Bronze Layer
 
-Responsável pela ingestão dos arquivos Parquet originais, preservando os dados o mais próximo possível da fonte.
-
-| Dataset | Volume (Landing Zone) | Destino (Bronze) |
-|---|---|---|
-| `yellow_tripdata` | `/Volumes/ifood/nyc/yellow_tripdata/` | `ifood.bronze.raw_yellow_taxi_tripdata` |
-| `green_tripdata` | `/Volumes/ifood/nyc/green_tripdata/` | `ifood.bronze.raw_green_taxi_tripdata` |
-
-### Campos Técnicos
-
-| Campo | Descrição |
-|---|---|
-| `_rescued_data` | Armazena dados que não puderam ser interpretados durante a leitura do arquivo |
-| `source_file` | Caminho do arquivo de origem |
-| `source_file_modified_at` | Data de última modificação do arquivo de origem |
-| `ingestion_at` | Momento em que o registro foi ingerido |
-
-### Decisões Técnicas
-
-A ingestão utiliza Streaming Tables, uma vez que os arquivos de origem são imutáveis e novos dados são disponibilizados apenas pela adição de novos arquivos. Esse modelo permite que a pipeline processe incrementalmente apenas os dados ainda não ingeridos.
-
-Os `schemaHints` foram configurados para refletir o schema predominante no conjunto de dados. Sem essa configuração, o arquivo de janeiro de 2023 — primeiro a ser processado durante a inferência de schema — acabava sendo utilizado como referência para os demais arquivos, gerando incompatibilidades de tipo.
-
-### Problemas Encontrados
-
-Os arquivos Parquet referentes a `2023-01` apresentam diferenças de schema em relação aos demais meses. Para garantir a ingestão sem perda de informação, o campo `_rescued_data` foi habilitado.
-
-| Arquivo | Campo | Tipo |
-|---|---|---|
-| `yellow_tripdata_2023-01.parquet` | `passenger_count` | `DOUBLE` |
-| `yellow_tripdata_2023-02.parquet` | `passenger_count` | `BIGINT` |
+[Bronze](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/bronze/README.md): Responsável pela ingestão dos arquivos Parquet originais, preservando os dados o mais próximo possível da fonte.
 
 ---
 
 ## Silver Layer
 
-Responsável por preparar os dados da camada Bronze para consumo analítico, aplicando padronizações, ajustes de schema e conversões de tipos de dados.
-
-| Origem (Bronze) | Destino (Silver) |
-|---|---|
-| `ifood.bronze.raw_yellow_taxi_tripdata` | `ifood.silver.mv_yellow_taxi_tripdata` |
-| `ifood.bronze.raw_green_taxi_tripdata` | `ifood.silver.mv_green_taxi_tripdata` |
-
-### Campos Adicionados
-
-| Campo | Descrição |
-|---|---|
-| `type_id` | Identifica o tipo de táxi: `1` para Yellow Taxi, `2` para Green Taxi |
-| `processed_at` | Timestamp da última atualização da Materialized View |
-
-Todos os campos não necessários para responder às perguntas do case foram removidos.
-
-### Campos Transformados
-
-Devido às diferenças de schema presentes nos arquivos de janeiro de 2023, alguns campos receberam tratamento específico — o valor é obtido da coluna original e, quando ausente, recuperado a partir de `_rescued_data`.
-
-| Campo | Lógica de recuperação |
-|---|---|
-| `vendor_id` | Lê `VendorID`; se ausente, busca em `_rescued_data` |
-| `passenger_count` | Lê `passenger_count`; se ausente, busca em `_rescued_data` |
-
-### Decisões Técnicas
-
-A camada foi implementada com Materialized Views, uma vez que seus dados são totalmente derivados da Bronze.
-
-### Problemas Encontrados
-
-Durante a exploração dos dados na camada Bronze, foram identificados registros com valores inconsistentes em `total_amount` e na duração das corridas. Para definir os limites de filtragem, foi realizada uma análise de percentis e, com base nos resultados, foram definidos os seguintes filtros para remoção de registros inválidos:
-
-- O limite de `total_amount` entre `1` e `180` cobrindo o p99.9 de ambas as frotas com margem adequada, descartando valores nulos, negativos ou anômalos.
-- A duração entre `1` e `90` minutos elimina corridas instantâneas ou excessivamente longas, cobrindo o p99.9 de ambas as frotas com margem adequada.
-- Registros com `passenger_count` igual a `0`, `null` ou acima da capacidade do veículo foram **mantidos**, pois, conforme a [documentação oficial](https://www.nyc.gov/assets/tlc/downloads/pdf/trip_record_user_guide.pdf), esse campo é *driver-reported* e suscetível a erro humano.
+[Silver](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/silver/README.md): Responsável por preparar os dados da camada Bronze para consumo analítico, aplicando padronizações, ajustes de schema e conversões de tipos de dado.
 
 ---
 
 ## Gold Layer
 
-Responsável pela unificação e enriquecimento dos dados das duas frotas de táxi, consolidando os registros de Yellow e Green Taxi em uma única tabela analítica.
-
-| Origem (Silver) | Destino (Gold) |
-|---|---|
-| `ifood.silver.mv_yellow_taxi_tripdata` | `ifood.gold.mv_taxi_tripdata` |
-| `ifood.silver.mv_green_taxi_tripdata` | `ifood.gold.mv_taxi_tripdata` |
-
-### Campos Adicionados
-
-Extraídos de `pickup_datetime` para facilitar análises temporais:
-
-| Campo | Descrição |
-|---|---|
-| `trip_year` | Ano da corrida |
-| `trip_month` | Mês da corrida |
-| `trip_day` | Dia da corrida |
-| `trip_hour` | Hora da corrida |
-
-Campos técnicos da tabela final:
-
-| Campo | Descrição |
-|---|---|
-| `updated_at` | Timestamp da última atualização da Materialized View |
-
-### Decisões Técnicas
-
-A camada foi implementada com **Materialized Views**, seguindo o mesmo padrão da Silver. A unificação dos dados é feita via `UNION ALL` das duas views da camada anterior, garantindo que todos os registros de ambas as frotas sejam consolidados sem deduplicação.
-
-Os campos `type_name` e `vendor_name` são derivados diretamente via `CASE` na própria view, evitando a necessidade de tabelas auxiliares de lookup.
-
+[Gold](https://github.com/valdineyvgomes/data-architect-technical-case/blob/main/ifood-case/src/transformations/gold/README.md): Responsável pela unificação e enriquecimento dos dados das duas frotas de táxi, consolidando os registros de Yellow e Green Taxi em uma única tabela analítica.
