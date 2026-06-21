@@ -45,7 +45,7 @@ WITH total_amount_per_month AS (
       trip_month
 )
 SELECT
-    ROUND(AVG(total_amount),2) AS avg_amount
+    CAST(AVG(total_amount) AS DECIMAL(18,2)) AS avg_amount
 FROM total_amount_per_month;
 
 -- COMMAND ----------
