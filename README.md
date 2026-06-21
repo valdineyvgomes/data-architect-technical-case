@@ -1,14 +1,10 @@
 # Case Técnico Data Architect - iFood
 
-Pipeline de dados construída no Databricks para ingestão, transformação e disponibilização analítica dos dados do (https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page), seguindo a **Medallion Architecture**
+Pipeline de dados construída no Databricks para ingestão, transformação e disponibilização analítica dos dados do (https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
 
 ---
 
 ## Premissas
-
-### Uso de IA
-
-A IA foi utilizada como apoio na formatação dos READMEs do projeto e correção ortográfica.
 
 ### Orquestração
 
@@ -29,6 +25,10 @@ O **DuckDB** foi utilizado para exploração local dos arquivos Parquet e entend
 ### Linguagem
 
 A solução foi desenvolvida inteiramente em **SQL**, por familiaridade com a linguagem.
+
+### Uso de IA
+
+A IA foi utilizada como apoio na formatação dos READMEs do projeto e correção ortográfica.
 
 ### Atualização dos Dados
 
